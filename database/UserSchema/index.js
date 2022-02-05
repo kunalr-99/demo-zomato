@@ -11,5 +11,4 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-export const UserModel = mongoose.model("auth-api", UserSchema);
-// export const UserModel = mongoose.model("collection name", schema name);
+export const UserModel = mongoose.model("auth-user", UserSchema);
