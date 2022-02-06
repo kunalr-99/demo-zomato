@@ -85,7 +85,7 @@ app.listen(5000, () => {
   console.log(`Server is up and running on http://localhost:5000`);
 });
 
-//LOCAL DATABASE -----------------
+// LOCAL DATABASE -----------------
 // const cred = [
 //   {
 //     fname: "Kunal",
@@ -109,7 +109,7 @@ app.listen(5000, () => {
 //   },
 // ];
 
-//SIGN UP ------------------------
+// SIGN UP ------------------------
 // app.post("/signup", (req, res) => {
 //   try {
 //     const { fname, email, pass } = req.body.credentials;
@@ -132,7 +132,7 @@ app.listen(5000, () => {
 //   }
 // });
 
-//SIGN IN ------------------------
+// SIGN IN ------------------------
 // app.post("/signin", (req, res) => {
 //   try {
 //     const { email, pass } = req.body.credentials;
