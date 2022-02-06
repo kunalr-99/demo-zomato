@@ -5,14 +5,18 @@ require("dotenv").config();
 import express from "express";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-// import bcrypt from "bcryptjs";
+import bcrypt from "bcryptjs";
 
 // File imports
 import { UserModel } from "./database/UserSchema";
 
 const app = express();
-app.use(express.json());
 
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Connection db
 const db = process.env.MONGO_URI;
 
 mongoose
@@ -28,17 +32,19 @@ app.get("/", (req, res) => {
   res.json({ msg: "Hello there!" });
 });
 
+// Sign up route
 app.post("/signup", async (req, res) => {
   try {
     const { fname, email, pass } = req.body.credentials;
     const doesEmailExist = await UserModel.findOne({ email });
     if (!doesEmailExist) {
-      // const salting = await bcrypt.genSalt(8);
-      // const hashedPass = await bcrypt.hash(pass, salting);
-      await UserModel.create({
+      const salting = await bcrypt.genSalt(8);
+      const hashedPass = await bcrypt.hash(pass, salting);
+      const newRegistration = await UserModel.create({
         ...req.body.credentials,
+        pass: hashedPass,
       });
-      const token = jwt.sign({ user: { fname, email } }, "auth");
+      const token = jwt.sign({ user: newRegistration._id }, "auth");
       return res.status(200).json({
         token,
         status: "Successfully retrieved your token and added new user",
@@ -51,6 +57,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+// Sign in route
 app.post("/signin", async (req, res) => {
   try {
     const { email, pass } = req.body.credentials;
@@ -62,7 +69,8 @@ app.post("/signin", async (req, res) => {
         .status(200)
         .json({ msg: "User does not exist. Please Sign up!!" });
 
-    if (pass === findEmail.pass) {
+    const checkPassword = await bcrypt.compare(pass, findEmail.pass);
+    if (checkPassword) {
       return res.status(200).json({ msg: "Access Granted" });
     } else {
       return res.status(200).json({ msg: "Invalid Password" });
@@ -72,6 +80,7 @@ app.post("/signin", async (req, res) => {
   }
 });
 
+// Listen to port
 app.listen(5000, () => {
   console.log(`Server is up and running on http://localhost:5000`);
 });
